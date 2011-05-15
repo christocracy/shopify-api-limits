@@ -9,8 +9,6 @@ module ShopifyAPI
   class << self
     ##
     # How many more API calls can I make?
-    # GLOBAL: 10/3000   2999/3000
-    # SHOP:   250/300     60/300
     #
     def available_calls
       shop = call_limit(:shop) - call_count(:shop)
@@ -28,6 +26,7 @@ module ShopifyAPI
     ##
     # How many total API calls can I make?
     # NOTE: subtracting 1 from call_limit because I think ShopifyAPI cuts off at 299/2999 or shop/global limits.
+    # @param {Symbol} scope [:shop|:global]
     # @return Integer
     #
     def call_limit(scope=:shop)
@@ -37,11 +36,15 @@ module ShopifyAPI
 
     ##
     # How many API calls have I made?
+    # @param {Symbol} scope [:shop|:global]
     # @return Integer
     def call_count(scope=:shop)
       api_call_limit_param(scope).shift.to_i
     end
     
+    ##
+    # @return {HTTPResonse}
+    #
     def response
       Shop.current unless ActiveResource::Base.connection.response
       ActiveResource::Base.connection.response
@@ -49,6 +52,9 @@ module ShopifyAPI
     
     private
     
+    ##
+    # @return {Array}
+    #
     def api_call_limit_param(scope)    
       response[CALL_LIMIT_HEADER_PARAM[scope]].split('/')      
     end    
