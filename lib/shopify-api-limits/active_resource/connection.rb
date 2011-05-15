@@ -1,9 +1,11 @@
+require 'active_resource'
+
 module ActiveResource
   class Connection
     # HACK 1:  Add an attr_reader for response
     attr_reader :response
   
-    def request(method, path, *arguments)
+    def request(method, path, *arguments)      
       result = ActiveSupport::Notifications.instrument("request.active_resource") do |payload|
         payload[:method]      = method
         payload[:request_uri] = "#{site.scheme}://#{site.host}:#{site.port}#{path}"

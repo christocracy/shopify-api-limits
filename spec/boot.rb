@@ -1,10 +1,7 @@
 require 'bundler'
 Bundler.require(:default, :development)
 
-# Load shopify c
+# Load shopify config
 config = YAML.load_file(File.join(File.dirname(__FILE__), "shopify_api.yml"))
 
 ActiveResource::Base.site = config["site"]
-
-shop = ShopifyAPI::Shop.current
-puts "shope: #{shop}"
