@@ -60,7 +60,10 @@ Now it's possible to access the HTTPResponse instance directly from ActiveResour
   
   count_global = ShopifyAPI.call_count :global
   limit_global = ShopifyAPI.call_limit :global
-      
+  
+The following methods don't require a scope (:shop/:global).  If the <b>:global</b> scope has fewer calls available than the local scope,
+the methods will operate upon the :global scope; otherwise, values will be returned based upon the :shop scope.   
+ 
   unless ShopifyAPI.maxed?
     shop = ShopifyAPI::Shop.current
   end
