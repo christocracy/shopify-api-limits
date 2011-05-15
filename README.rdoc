@@ -1,0 +1,3 @@
+= shopify-api-limits
+
+== Installation
