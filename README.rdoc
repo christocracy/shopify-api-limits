@@ -51,3 +51,26 @@ Now it's possible to access the HTTPResponse instance directly from ActiveResour
   
   
 == Installation
+  gem "shopify_api"
+  gem "shopify-api-limits"
+
+== Usage
+  count_shop = ShopifyAPI.call_count :shop
+  limit_shop = ShopifyAPI.call_limit :shop
+  
+  count_global = ShopifyAPI.call_count :global
+  limit_global = ShopifyAPI.call_limit :global
+      
+  unless ShopifyAPI.maxed?
+    shop = ShopifyAPI::Shop.current
+  end
+  
+  until ShopifyAPI.maxed?
+    # make some ShopifyAPI calls
+  end
+  
+  while ShopifyAPI.available_calls
+    # make some ShopifyAPI calls
+  end  
+
+
