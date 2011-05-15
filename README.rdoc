@@ -64,7 +64,7 @@ Now it's possible to access the HTTPResponse instance directly from ActiveResour
 Generally, you shouldn't need to use the methods above directly -- rather they're used under-the-hood by the following helpful methods which don't require a scope (:shop/:global):  If the <b>:global</b> scope has fewer calls available than the <b>:local</b> scope, the methods will operate upon the <b>:global</b> scope; otherwise, values will be returned based upon the <b>:shop</b> scope.   
  
   unless ShopifyAPI.maxed?
-    shop = ShopifyAPI::Shop.current
+    #make some ShopifyAPI calls
   end
   
   until ShopifyAPI.maxed?
