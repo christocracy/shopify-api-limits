@@ -1,1 +1,1 @@
-site: [insert your ActiveResource::Base.site url here]
+site: <insert your ActiveResource::Base.site url here>
