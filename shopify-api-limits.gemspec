@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
   #s.rubyforge_project = "shopify-api-limits"
   
   s.add_dependency "shopify_api", ">= 1.2.2"
+  s.add_development_dependency "rspec", ">=2.6.0"
+  s.add_development_dependency "shopify_api", ">= 1.2.2"
   
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
