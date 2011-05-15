@@ -1,4 +1,4 @@
-class ActiveResource
+module ActiveResource
   class Connection
     # HACK 1:  Add an attr_reader for response
     attr_reader :response
