@@ -1,3 +1,53 @@
 = shopify-api-limits
 
+My friend Dave (aka "hunkybill") posted a problem to one day about ShopifyAPI call limits.
+http://forums.shopify.com/categories/9/posts/49003
+
+So in the HTTP headers, the ShopifyAPI will return to you in each API request how many calls you've made, as well as the maximum number of calls available.
+
+== Problem
+ActiveResource does not make it easy to read the HTTP response headers, since the method #request in ActiveResource::Connection does not save a reference to the HTTP response:
+  
+  # Makes a request to the remote service.
+  def request(method, path, *arguments)
+    result = ActiveSupport::Notifications.instrument("request.active_resource") do |payload|
+      payload[:method]      = method
+      payload[:request_uri] = "#{site.scheme}://#{site.host}:#{site.port}#{path}"
+      payload[:result]      = http.send(method, path, *arguments)
+    end
+    handle_response(result) # <------------------- right here:  handle_response return an instance of HTTPResponse but doesn't save a ref to it
+  rescue Timeout::Error => e
+    raise TimeoutError.new(e.message)
+  rescue OpenSSL::SSL::SSLError => e
+    raise SSLError.new(e.message)
+  end
+  
+== Solution
+Hack ActiveResource::Connection to introduce a new attr_reader :response and saved the returned HTTPResponse instance to it.
+  
+  class ActiveResource
+    class Connection
+      # HACK 1:  Add an attr_reader for response
+      attr_reader :response
+
+      def request(method, path, *arguments)
+        result = ActiveSupport::Notifications.instrument("request.active_resource") do |payload|
+          payload[:method]      = method
+          payload[:request_uri] = "#{site.scheme}://#{site.host}:#{site.port}#{path}"
+          payload[:result]      = http.send(method, path, *arguments)
+        end  
+        # HACK 2:  Save response to instance var @response  
+        @response = handle_response(result)
+      rescue Timeout::Error => e
+        raise TimeoutError.new(e.message)
+      rescue OpenSSL::SSL::SSLError => e
+        raise SSLError.new(e.message)
+      end  
+    end
+  end  
+  
+Now it's possible to access the HTTPResponse instance directly from ActiveResource, via:
+  foo = ActiveResource::Base.connection.response['http-header-param-foo']
+  
+  
 == Installation
