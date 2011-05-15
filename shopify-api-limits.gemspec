@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.summary     = %q{This gem adds the ability to read shopify API call limits to the ShopifyAPI gem}
   s.description = %q{This gem adds the ability to read shopify API call limits to the ShopifyAPI gem}
 
-  s.rubyforge_project = "shopify-api-limits"
+  #s.rubyforge_project = "shopify-api-limits"
   
   s.add_dependency "shopify_api", ">= 1.2.3"
   
