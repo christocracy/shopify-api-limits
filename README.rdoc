@@ -1,6 +1,6 @@
 = shopify-api-limits
 
-My friend Dave (aka "hunkybill") posted a problem to one day about ShopifyAPI call limits.
+My friend Dave (aka "hunkybill") posted a problem to me one day about ShopifyAPI call limits, offering a case of beer if I could find a solution:
 http://forums.shopify.com/categories/9/posts/49003
 
 So in the HTTP headers, the ShopifyAPI will return to you in each API request how many calls you've made, as well as the maximum number of calls available.
