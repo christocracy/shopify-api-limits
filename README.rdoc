@@ -23,28 +23,23 @@ ActiveResource does not make it easy to read the HTTP response headers, since th
   end
   
 == Solution
-Hack ActiveResource::Connection to introduce a new attr_reader :response and saved the returned HTTPResponse instance to it.
+Hack ActiveResource::Connection to introduce a new attr_reader :response and capture the returned HTTPResponse instance from the #handle_response method.
   
-  class ActiveResource
+  module ActiveResource
     class Connection
-      # HACK 1:  Add an attr_reader for response
+      # HACK:  Add an attr_reader for response
       attr_reader :response
 
-      def request(method, path, *arguments)
-        result = ActiveSupport::Notifications.instrument("request.active_resource") do |payload|
-          payload[:method]      = method
-          payload[:request_uri] = "#{site.scheme}://#{site.host}:#{site.port}#{path}"
-          payload[:result]      = http.send(method, path, *arguments)
-        end  
-        # HACK 2:  Save response to instance var @response  
-        @response = handle_response(result)
-      rescue Timeout::Error => e
-        raise TimeoutError.new(e.message)
-      rescue OpenSSL::SSL::SSLError => e
-        raise SSLError.new(e.message)
-      end  
+      # capture the original #handle_response as an unbound method instead of using alias 
+      handle_response = self.instance_method(:handle_response)
+
+      # re-implement #handle_response to capture the returned HTTPResponse to an instance var.    
+      define_method(:handle_response) do |response| 
+        @response = handle_response.bind(self).call(response)
+      end 
     end
-  end  
+  end
+  
   
 Now it's possible to access the HTTPResponse instance directly from ActiveResource, via:
   foo = ActiveResource::Base.connection.response['http-header-param-foo']
