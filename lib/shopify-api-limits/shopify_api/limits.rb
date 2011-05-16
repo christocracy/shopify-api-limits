@@ -14,7 +14,7 @@ module ShopifyAPI
       # @return {Integer}
       #
       def credit_left
-        shop = call_limit(:shop) - credit_used(:shop)
+        shop = credit_limit(:shop) - credit_used(:shop)
         global = credit_limit(:global) - credit_used(:global)      
         shop < global ? shop : global
       end
@@ -25,7 +25,7 @@ module ShopifyAPI
       # @return {Boolean}
       #
       def credit_maxed?
-        available_calls == 0
+        credit_left == 0
       end
       alias_method :maxed?, :credit_maxed?
       

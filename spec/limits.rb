@@ -25,8 +25,10 @@ describe "Limits" do
   it "Can execute up to local max" do
     until ShopifyAPI.credit_maxed?
       ShopifyAPI::Shop.current
-      puts "avail: #{ShopifyAPI.available_calls}, maxed: #{ShopifyAPI.maxed?}"
+      puts "avail: #{ShopifyAPI.credit_left}, maxed: #{ShopifyAPI.credit_maxed?}"
     end
+    ShopifyAPI.credit_maxed?.should be_true
+    (ShopifyAPI.credit_left == 0).should be_true
   end
     
 end
