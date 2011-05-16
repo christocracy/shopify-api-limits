@@ -4,22 +4,16 @@ module ShopifyAPI
   module Limits
     # Connection hack
     require 'shopify-api-limits/active_resource/connection'
-    
     require 'shopify-api-limits/shopify_api/limits'
     
-    class Error < StandardError
-      def self.status_code(code = nil)
-        return @code unless code
-        @code = code
-      end
-      
-      def status_code
-        self.class.status_code
-      end
+    def self.included(klass)
+      klass.send(:extend, ClassMethods)
     end
-
-    class GlobalError < Error; status_code(1) ; end
-    class ShopError < Error; status_code(2) ; end
+    
+    class Error < StandardError; end
+    class GlobalError < Error; end
+    class ShopError < Error; end
+    
   end
 end
 

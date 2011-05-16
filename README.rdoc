@@ -50,23 +50,23 @@ Now it's possible to access the HTTPResponse instance directly from ActiveResour
   gem "shopify-api-limits"
 
 == Usage
-  count_shop = ShopifyAPI.call_count :shop
-  limit_shop = ShopifyAPI.call_limit :shop
+  count_shop = ShopifyAPI.credit_used :shop
+  limit_shop = ShopifyAPI.credit_limit :shop
   
-  count_global = ShopifyAPI.call_count :global
-  limit_global = ShopifyAPI.call_limit :global
+  count_global = ShopifyAPI.credit_used :global
+  limit_global = ShopifyAPI.credit_limit :global
   
-Generally, you shouldn't need to use the methods above directly -- rather they're used under-the-hood by the following helpful methods which don't require a scope (:shop/:global):  If the <b>:global</b> scope has fewer calls available than the <b>:local</b> scope, the methods will operate upon the <b>:global</b> scope; otherwise, values will be returned based upon the <b>:shop</b> scope.   
+Generally, you shouldn't need to use the methods above directly -- rather, they're used under-the-hood by the following helpful methods which don't require a scope (<b>:shop/:global</b>):  If the <b>:global</b> scope has fewer calls available than the <b>:local</b> scope, the methods will operate upon the <b>:global</b> scope; otherwise, values will be returned based upon the <b>:shop</b> scope.   
  
-  unless ShopifyAPI.maxed?
-    #make some ShopifyAPI calls
+  unless ShopifyAPI.credit_maxed?
+    #make a ShopifyAPI call
   end
   
-  until ShopifyAPI.maxed?
+  until ShopifyAPI.credit_maxed? || stop_condition
     # make some ShopifyAPI calls
   end
   
-  while ShopifyAPI.available_calls
+  while ShopifyAPI.credit_left || stop_condition
     # make some ShopifyAPI calls
   end  
 
