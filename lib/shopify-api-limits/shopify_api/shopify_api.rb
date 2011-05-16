@@ -1,13 +1,20 @@
 module ShopifyAPI
-  # Takes form num_requests_executed/max_requests
-  # Eg: 101/3000
-  CALL_LIMIT_HEADER_PARAM = {
-    :global => 'http_x_shopify_api_call_limit',
-    :shop => 'http_x_shopify_shop_api_call_limit'
-  }
+  module Limits            
+    def self.included(klass)
+      klass.send(:extend, ClassMethods)
+    end
+  end
   
-  class << self
-    ##
+  module ClassMethods
+    
+    # Takes form num_requests_executed/max_requests
+    # Eg: 101/3000
+    CALL_LIMIT_HEADER_PARAM = {
+      :global => 'http_x_shopify_api_call_limit',
+      :shop => 'http_x_shopify_shop_api_call_limit'
+    }
+    
+      ##
     # How many more API calls can I make?
     # @return {Integer}
     #
@@ -44,7 +51,7 @@ module ShopifyAPI
     def call_count(scope=:shop)
       api_call_limit_param(scope).shift.to_i
     end
-    
+  
     ##
     # @return {HTTPResonse}
     #
@@ -52,14 +59,14 @@ module ShopifyAPI
       Shop.current unless ActiveResource::Base.connection.response
       ActiveResource::Base.connection.response
     end
-    
+  
     private
-    
+  
     ##
     # @return {Array}
     #
     def api_call_limit_param(scope)    
       response[CALL_LIMIT_HEADER_PARAM[scope]].split('/')      
     end    
-  end  
+  end
 end

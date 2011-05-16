@@ -22,3 +22,5 @@ module ShopifyAPI
     class ShopError < Error; status_code(2) ; end
   end
 end
+
+ShopifyAPI.send(:include, ShopifyAPI::Limits)
