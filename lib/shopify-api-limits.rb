@@ -5,7 +5,7 @@ module ShopifyAPI
     # Connection hack
     require 'shopify-api-limits/active_resource/connection'
     
-    require 'shopify-api-limits/shopify_api/shopify_api'
+    require 'shopify-api-limits/shopify_api/limits'
     
     class Error < StandardError
       def self.status_code(code = nil)
