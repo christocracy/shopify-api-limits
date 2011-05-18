@@ -70,4 +70,19 @@ Generally, you shouldn't need to use the methods above directly -- rather, they'
     # make some ShopifyAPI calls
   end  
 
+== Automatically aggregated resultsets when your limit is > 250
+Shopify places a hard limit of 250 on the number of records returned in a single request.  There are ways around this, including one listed here 
+http://wiki.shopify.com/Retrieving_more_than_250_Products%2C_Orders_etc. which involves manually calculating the total & number of pages then iterating to make several API calls.  This gem encapsulates this behaviour allowing you to make what seems like a single call to the ShopifyAPI.  Simply set <b>:params => {:limit => false}</b>.  False as in, "no limit"
+
+For example, imagine a store which has <b>251</b> orders and you want to fetch them all.  Since the maximum number of records returned in a single request is <b>250</b>, 2 requests must be made to the API in order to fetch all <b>251</b> records.
+
+  records = ShopifyAPI::Order.all(:params => {:limit => false})
+  puts records.count
+  => 251
+
+Without <b>{:limit => false}, the normal behaviour will operate (ie: just one request with 250 records returned):
+
+  records = ShopifyAPI::Order.all
+  puts records.count
+  => 250
 
