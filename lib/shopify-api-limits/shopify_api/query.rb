@@ -7,10 +7,16 @@ module ShopifyAPI
     
     module ClassMethods
       QUERY_LIMIT = 250
-      def all(*config)                   
-        model = const_get(config.shift.to_s.classify)
+      
+      ##
+      # Stitches resultsets where count is greater than Shopify's single query limit of 250, as if there were no limit.
+      # Will determine the number of pages of 250 in order to return a single resultset.
+      # raises ShopifyAPI::Limits::Error if you haven't enough credits to fetch all your records.
+      # 
+      def all(model_symbol, *config)                   
+        model = const_get(model_symbol.to_s.classify)
         args = config.shift || {}
-        args[:params] ||= {}                
+        args[:params] ||= {}                                   
         count = model.send(:count, :params => args[:params])
         pages = (count.to_f/QUERY_LIMIT).ceil
         raise Limits::Error.new unless credit_left >= pages
