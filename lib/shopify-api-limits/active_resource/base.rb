@@ -21,11 +21,11 @@ module ActiveResource
         return find_every.bind(self).call(options) unless limit == false
         
         total = count(options).to_f
-        options[:params][:limit] = SHOPIFY_API_MAX_LIMIT
+        options[:params].update(:limit => SHOPIFY_API_MAX_LIMIT)
         pages = (total/SHOPIFY_API_MAX_LIMIT).ceil
           
         # raise Limits::Error if not enough credits to retrieve entire recordset
-        raise ShopifyAPI::Limits::Error.new unless ShopifyAPI.credit_left >= pages
+        raise ShopifyAPI::Limits::Error.new if ShopifyAPI.credit_maxed?
 
         # Iterate from 1 -> max-pages and call the original #find_every, capturing the responses into one list
         rs = []        
