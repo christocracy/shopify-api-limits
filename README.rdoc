@@ -3,10 +3,10 @@
 My friend Dave (aka "hunkybill") posted a problem to me one day about ShopifyAPI call limits, offering a case of beer if I could find a solution:
 http://forums.shopify.com/categories/9/posts/49003
 
-So in the HTTP headers, the ShopifyAPI will return to you in each API request how many calls you've made, as well as the maximum number of calls available.
+So in the HTTP headers, the <tt>ShopifyAPI</tt> will return to you in each API request how many calls you've made, as well as the maximum number of calls available.
 
 == Problem
-ActiveResource does not make it easy to read the HTTP response headers, since the method #request in ActiveResource::Connection does not save a reference to the HTTP response:
+<tt>ActiveResource</tt> does not make it easy to read the HTTP response headers, since the method <tt>#request</tt> in <tt>ActiveResource::Connection</tt> does not save a reference to the HTTP response:
   
   # Makes a request to the remote service.
   def request(method, path, *arguments)
@@ -15,7 +15,7 @@ ActiveResource does not make it easy to read the HTTP response headers, since th
       payload[:request_uri] = "#{site.scheme}://#{site.host}:#{site.port}#{path}"
       payload[:result]      = http.send(method, path, *arguments)
     end
-    handle_response(result) # <------------------- right here:  handle_response return an instance of HTTPResponse but doesn't save a ref to it
+    handle_response(result) # <-- right here:  handle_response returns an instance of HTTPResponse but doesn't save a ref to it!
   rescue Timeout::Error => e
     raise TimeoutError.new(e.message)
   rescue OpenSSL::SSL::SSLError => e
@@ -23,7 +23,7 @@ ActiveResource does not make it easy to read the HTTP response headers, since th
   end
   
 == Solution
-Hack ActiveResource::Connection to introduce a new attr_reader :response and capture the returned HTTPResponse instance from the #handle_response method.
+Hack <tt>ActiveResource::Connection</tt> to introduce a new <tt>attr_reader :response</tt> and capture the returned <tt>HTTPResponse</tt> from <tt>net/http</tt> instance from the <tt>#handle_response</tt> method.
   
   module ActiveResource
     class Connection
@@ -41,7 +41,7 @@ Hack ActiveResource::Connection to introduce a new attr_reader :response and cap
   end
   
   
-Now it's possible to access the HTTPResponse instance directly from ActiveResource, via:
+Now it's possible to access the <tt>HTTPResponse</tt> instance directly from <tt>ActiveResource</tt>, via:
   foo = ActiveResource::Base.connection.response['http-header-param-foo']
   
   
@@ -56,7 +56,7 @@ Now it's possible to access the HTTPResponse instance directly from ActiveResour
   count_global = ShopifyAPI.credit_used :global
   limit_global = ShopifyAPI.credit_limit :global
   
-Generally, you shouldn't need to use the methods above directly -- rather, they're used under-the-hood by the following helpful methods which don't require a scope (<b>:shop/:global</b>):  If the <b>:global</b> scope has fewer calls available than the <b>:local</b> scope, the methods will operate upon the <b>:global</b> scope; otherwise, values will be returned based upon the <b>:shop</b> scope.   
+Generally, you <b>shouldn't need</b> to use the methods above directly -- rather, they're used under-the-hood by the following helpful methods which don't require a scope (<tt>:shop/:global</tt>):  If the <b>:global</b> scope has fewer calls available than the <tt>:local</tt> scope, the methods will operate upon the <tt>:global</tt> scope; otherwise, values will be returned based upon the <tt>:shop</tt> scope.   
  
   unless ShopifyAPI.credit_maxed?
     #make a ShopifyAPI call
@@ -71,22 +71,22 @@ Generally, you shouldn't need to use the methods above directly -- rather, they'
   end  
 
 == A special bonus for retrieving large recordsets > 250 records
-Shopify places a hard limit of 250 on the number of records returned in a single request.  There are ways around this, including one listed here 
-http://bit.ly/kgwCRc which involves manually calculating the total & number of pages then iterating to make several API calls.  This gem encapsulates this behaviour allowing you to make what <i>feels</i> <tt>like</tt> a single call to the ShopifyAPI.  Simply set <b>:params => {:limit => false}</b>.  False as in, "no limit"
+Shopify places a hard limit of <tt>250</tt> on the number of records returned in a single request.  There are ways around this, including one listed here 
+http://bit.ly/kgwCRc which involves manually calculating the total & number of pages then iterating to make several API calls.  This gem encapsulates this behaviour allowing you to make what <i>feels</i> like a single call to the <tt>ShopifyAPI</tt>.  Simply set <tt>:params => {:limit => false}</tt>.  False as in, "no limit"
 
-For example, imagine a store which has <b>251</b> orders and you want to fetch them all.  Since the maximum number of records returned in a single request is <b>250</b>, 2 requests must be made to the API in order to fetch all <b>251</b> records.
+For example, imagine a store which has <b>251</b> orders and you want to fetch them all.  Since the maximum number of records returned in a single request is <tt>250</tt>, 2 requests must be made to the API in order to fetch all <tt>251</tt> records.
 
   records = ShopifyAPI::Order.all(:params => {:limit => false})
   puts records.count
   => 251
 
-Without <b>{:limit => false}</b>, the normal behaviour will operate (ie: just one request with 250 records returned):
+Without <tt>{:limit => false}</tt>, the normal behaviour will operate (ie: just one request with 250 records returned):
 
   records = ShopifyAPI::Order.all(:params => {:limit => 250})
   puts records.count
   => 250
 
-If you don't have enough API credits to perform the multiple requests to serve your desired recordset, a <b>ShopifyAPI::Limits::Error</b> will be raised:
+If you don't have enough API credits to perform the multiple requests to serve your desired recordset, a <tt>ShopifyAPI::Limits::Error</tt> will be raised:
   puts ShopifyAPI::Order.count
   => 251
   
