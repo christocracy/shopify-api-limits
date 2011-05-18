@@ -87,7 +87,9 @@ Without <b>{:limit => false}</b>, the normal behaviour will operate (ie: just on
   => 250
 
 If you don't have enough API credits to perform the multiple requests to serve your desired recordset, a <b>ShopifyAPI::Limits::Error</b> will be raised:
-
+  puts ShopifyAPI.credit_left
+  => 0
+  
   begin
     rs = ShopifyAPI::Order.all(:params => {:limit => false})
   rescue ShopifyAPI::Limits::Error
