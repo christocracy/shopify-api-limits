@@ -23,7 +23,7 @@ So in the HTTP headers, the <tt>ShopifyAPI</tt> will return to you in each API r
   end
   
 == Solution
-Hack <tt>ActiveResource::Connection</tt> to introduce a new <tt>attr_reader :response</tt> and capture the returned <tt>HTTPResponse</tt> from <tt>net/http</tt> instance from the <tt>#handle_response</tt> method.
+Hack <tt>ActiveResource::Connection</tt> to introduce a new <tt>attr_reader :response</tt> and capture the returned instance of <tt>HTTPResponse</tt> provided by <tt>net/http</tt> from the <tt>#handle_response</tt> method.
   
   module ActiveResource
     class Connection
