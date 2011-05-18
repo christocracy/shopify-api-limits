@@ -12,8 +12,7 @@ module ShopifyAPI
         model = const_get(config.shift.to_s.classify)
         args = config.shift || {}
         args[:params] ||= {}
-        args[:params][:limit] ||= QUERY_LIMIT
-        
+                
         count = model.send(:count, :params => args[:params])
         rs = []
         if count > 0          
