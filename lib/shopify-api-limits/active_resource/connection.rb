@@ -11,6 +11,6 @@ module ActiveResource
     # re-implement #handle_response to capture the returned HTTPResponse to an instance var.    
     define_method(:handle_response) do |response| 
       @response = handle_response.bind(self).call(response)
-    end 
-  end
+    end         
+  end    
 end
