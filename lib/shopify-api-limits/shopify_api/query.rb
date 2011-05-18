@@ -7,19 +7,15 @@ module ShopifyAPI
     
     module ClassMethods
       QUERY_LIMIT = 250
-      
-      def all(*config)        
+      def all(*config)                   
         model = const_get(config.shift.to_s.classify)
         args = config.shift || {}
-        args[:params] ||= {}
-                
+        args[:params] ||= {}                
         count = model.send(:count, :params => args[:params])
+        pages = (count.to_f/QUERY_LIMIT).ceil
+        raise Limits::Error.new unless credit_left >= pages
         rs = []
-        if count > 0          
-          1.upto((count.to_f/QUERY_LIMIT).ceil) {|page|                        
-            rs.concat model.send(:find, :all, :params => {:page => page}.merge(args[:params]))
-          }
-        end
+        1.upto(pages) {|page| rs.concat model.send(:find, :all, :params => {:page => page}.merge(args[:params])) } if count > 0
         rs
       end
     end
