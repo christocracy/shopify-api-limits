@@ -80,9 +80,9 @@ For example, imagine a store which has <b>251</b> orders and you want to fetch t
   puts records.count
   => 251
 
-Without <b>{:limit => false}, the normal behaviour will operate (ie: just one request with 250 records returned):
+Without <b>{:limit => false}</b>, the normal behaviour will operate (ie: just one request with 250 records returned):
 
-  records = ShopifyAPI::Order.all
+  records = ShopifyAPI::Order.all(:params => {:limit => 250})
   puts records.count
   => 250
 
