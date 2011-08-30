@@ -30,7 +30,7 @@ module ActiveResource
         # Iterate from 1 -> max-pages and call the original #find_every, capturing the responses into one list
         rs = []        
         1.upto(pages) {|page| 
-          rs.concat find_every.bind(self).call(options.update(:page => page))
+          rs.concat find_every.bind(self).call(options[:params].update(:page => page))
         }
         rs                  
       end
