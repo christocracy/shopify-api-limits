@@ -55,8 +55,8 @@ module ShopifyAPI
       # @return {HTTPResonse}
       #
       def response
-        Shop.current unless ActiveResource::Base.connection.response
-        ActiveResource::Base.connection.response
+        Shop.current unless Base.connection.response
+        Base.connection.response
       end
 
       private

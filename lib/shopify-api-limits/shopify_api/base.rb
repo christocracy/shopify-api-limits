@@ -1,10 +1,11 @@
+require 'active_resource'
 ##
 # Redefines #find_every to automatically compose resultsets from multiple ShopifyAPI queries due to API limit of 250 records / request.
 # Seemlessly stitches all requests to #all, #find(:all), etc, as if there were no LIMIT.
 # @see http://wiki.shopify.com/Retrieving_more_than_250_Products%2C_Orders_etc.
 #
-module ActiveResource
-  class Base     
+module ShopifyAPI
+  class Base < ActiveResource::Base
     SHOPIFY_API_MAX_LIMIT = 250
     
     class << self
@@ -28,9 +29,11 @@ module ActiveResource
         raise ShopifyAPI::Limits::Error.new if ShopifyAPI.credit_maxed?
 
         # Iterate from 1 -> max-pages and call the original #find_every, capturing the responses into one list
+        
         rs = []        
         1.upto(pages) {|page| 
-          rs.concat find_every.bind(self).call(options.update(:page => page))
+          options[:params].update(page: page)
+          rs.concat find_every.bind(self).call(options)
         }
         rs                  
       end
