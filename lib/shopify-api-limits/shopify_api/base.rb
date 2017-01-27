@@ -3,8 +3,8 @@
 # Seemlessly stitches all requests to #all, #find(:all), etc, as if there were no LIMIT.
 # @see http://wiki.shopify.com/Retrieving_more_than_250_Products%2C_Orders_etc.
 #
-module ActiveResource
-  class Base     
+module ShopifyAPI
+  class Base
     SHOPIFY_API_MAX_LIMIT = 250
     
     class << self
@@ -30,7 +30,7 @@ module ActiveResource
         # Iterate from 1 -> max-pages and call the original #find_every, capturing the responses into one list
         rs = []        
         1.upto(pages) {|page| 
-          rs.concat find_every.bind(self).call(options.update(:page => page))
+          rs.concat find_every.bind(self).call(options[:params].update(:page => page))
         }
         rs                  
       end

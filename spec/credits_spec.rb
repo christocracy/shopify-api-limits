@@ -14,7 +14,7 @@ describe "Limits" do
   
   it "Can fetch global limits" do
     count = ShopifyAPI.credit_used :global
-    limit = ShopifyAPI.creidt_limit :global
+    limit = ShopifyAPI.credit_limit :global
     
     (count < 3000 && count > 0).should be_true
     (count < limit).should be_true
